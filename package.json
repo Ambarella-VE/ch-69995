@@ -1,0 +1,15 @@
+{
+  "name": "preentrega",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run start --prefix server\" \"npm run run-dev --prefix  client\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
