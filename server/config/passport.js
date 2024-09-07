@@ -2,8 +2,9 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GithubStrategy } from 'passport-github2';
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import User from '../models/user.model.js';
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from './config.js';
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, JWT_SECRET } from './config.js';
 
 // Configuración de Passport con estrategia local
 passport.use('local', new LocalStrategy(
@@ -44,6 +45,20 @@ passport.use(new GithubStrategy({
     }
   }
 ));
+
+// Configuración de Passport con estrategia JWT
+passport.use(new JwtStrategy({
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: JWT_SECRET
+}, async (payload, done) => {
+  try {
+    const user = await User.findById(payload.sub);
+    if (!user) return done(null, false);
+    return done(null, user);
+  } catch (error) {
+    return done(error, false);
+  }
+}));
 
 // Serialización y deserialización de usuarios
 passport.serializeUser((user, done) => {

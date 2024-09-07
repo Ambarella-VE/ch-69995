@@ -1,7 +1,10 @@
 // server/routes/auth.routes.js
 import express from 'express';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 import cookieParser from 'cookie-parser';
+import { JWT_SECRET } from '../config/config.js';
 
 const router = express.Router();
 
@@ -49,19 +52,26 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
 
-  const isPasswordValid = user.comparePassword(password);
+  const isPasswordValid = await user.comparePassword(password);
   if (!isPasswordValid) {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
 
+  const token = jwt.sign({ sub: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+
   res.cookie('user', JSON.stringify({ email: user.email, role: user.role }), { httpOnly: true });
-  res.json({ message: 'Login successful' });
+  res.json({ message: 'Login successful', token });
 });
 
 // Ruta para logout de usuario
 router.post('/logout', (req, res) => {
   res.clearCookie('user');
   res.json({ message: 'Logout successful' });
+});
+
+// Ruta para obtener datos del usuario logueado
+router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
+  res.json({ message: 'Current user', user: req.user });
 });
 
 export default router;
