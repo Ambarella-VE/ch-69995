@@ -21,6 +21,11 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: process.env.NODE_ENV === 'production' } // Use secure cookies in production
 }));
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
+
 
 // Passport initialization
 app.use(passport.initialize());

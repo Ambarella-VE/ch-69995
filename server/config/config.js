@@ -6,3 +6,4 @@ dotenv.config();
 export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 export const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 export const JWT_SECRET = process.env.JWT_SECRET;
+export const SESSION_SECRET = process.env.SESSION_SECRET; 

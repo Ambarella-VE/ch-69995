@@ -15,7 +15,10 @@ const cartSchema = new mongoose.Schema({
 });
 
 cartSchema.methods.calculateTotalPrice = function () {
-  return this.items.reduce((total, item) => total + item.product.price * item.quantity, 0);
+  return this.items.reduce(async (total, item) => {
+    const product = await mongoose.model('Product').findById(item.product);
+    return total + (product.price * item.quantity);
+  }, 0);
 };
 
 const Cart = mongoose.model('Cart', cartSchema);
