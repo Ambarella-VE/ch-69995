@@ -6,7 +6,10 @@ const userSchema = new mongoose.Schema({
   first_name: { type: String, required: true },
   last_name: { type: String, required: true },
   age: { type: Number, required: true },
-  email: { type: String, required: true, unique: true, index: true },
+  email: { type: String, required: true, unique: true, index: true, validate: {
+    validator: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+    message: props => `${props.value} no es un correo válido!`
+  }},
   password: { type: String, required: true },
   role: { type: String, default: "user" },
   cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' },
